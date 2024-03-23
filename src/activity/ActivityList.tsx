@@ -35,10 +35,10 @@ const ActivityList: React.FC = () => {
         <Table aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCell>Date</TableCell>
-              <TableCell>Category</TableCell>
-              <TableCell>SubCategory</TableCell>
-              <TableCell>Memo</TableCell>
+              <TableCell>日付</TableCell>
+              <TableCell>カテゴリ</TableCell>
+              <TableCell>サブカテゴリ</TableCell>
+              <TableCell>メモ</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
