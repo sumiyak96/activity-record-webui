@@ -1,7 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import ServerAdapter from '../api/ServerAdapter';
 import { RegisterSubCategoryRequest, SubCategory, UpdateSubCategoryRequest } from './Category';
-import SubCategoryEditor from './SubCategoryEditor'; // 編集フォーム用のコンポーネント
+import SubCategoryEditor from './SubCategoryEditor';
+import { Button, Modal, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 'auto',
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+};
 
 interface Props {
   isOpen: boolean;
@@ -10,61 +23,83 @@ interface Props {
   onClose: () => void;
 }
 
-const SubCategoryList: React.FC<Props> = ({ categoryId, subCategories, onClose }) => {
+const SubCategoryList: React.FC<Props> = ({ isOpen, categoryId, subCategories, onClose }) => {
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [editingSubCategory, setEditingSubCategory] = useState<SubCategory | null>(null);
 
-  // 編集ボタンクリック時の処理
   const handleEditClick = (subCategory: SubCategory) => {
     setEditingSubCategory(subCategory);
     setIsEditorOpen(true);
   };
 
-  // 削除ボタンクリック時の処理
   const handleDeleteClick = async (subCategoryId: number) => {
     const isConfirmed = window.confirm("Are you sure you want to delete this subcategory?");
     if (isConfirmed) {
-      // await ServerAdapter.deleteSubCategory(subCategoryId);
+      // 削除処理を実装
     }
   };
 
-  // 追加ボタンクリック時の処理
   const handleAddClick = () => {
-    setEditingSubCategory(null); // 新規追加の場合はnullを設定
+    setEditingSubCategory(null);
     setIsEditorOpen(true);
   };
 
-  // 保存処理
   const handleSave = async (subCategoryRequest: RegisterSubCategoryRequest | UpdateSubCategoryRequest) => {
     if ('subCategoryId' in subCategoryRequest) {
       await ServerAdapter.updateSubCategory(subCategoryRequest);
     } else {
-      await ServerAdapter.registerSubCategory({ ...subCategoryRequest, categoryId }); // categoryIdを含めて新規追加
+      await ServerAdapter.registerSubCategory({ ...subCategoryRequest, categoryId });
     }
     setIsEditorOpen(false);
   };
 
   return (
-    <div style={{ border: '2px solid black', padding: '20px', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: 'white' }}>
-      <h2>サブカテゴリ一覧</h2>
-      <button onClick={handleAddClick}>Add SubCategory</button>
-      {subCategories?.map((subCategory) => (
-        <div key={subCategory.subCategoryId}>
-          <span>{subCategory.subCategoryName}</span>
-          <button onClick={() => handleEditClick(subCategory)}>Edit</button>
-          <button onClick={() => handleDeleteClick(subCategory.subCategoryId)}>Delete</button>
-        </div>
-      ))}
-      {isEditorOpen && (
-        <SubCategoryEditor
-          isOpen={isEditorOpen}
-          onClose={() => setIsEditorOpen(false)}
-          onSave={handleSave}
-          selectedCategoryId={categoryId}
-          subCategory={editingSubCategory}
-        />
-      )}
-    </div>
+    <Modal
+      open={isOpen}
+      onClose={onClose}
+      aria-labelledby="modal-modal-title"
+      aria-describedby="modal-modal-description"
+    >
+      <Box sx={style}>
+        <h2>サブカテゴリ一覧</h2>
+        <Button variant="contained" color="primary" onClick={handleAddClick}>新規サブカテゴリ追加</Button>
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>サブカテゴリ名</TableCell>
+                <TableCell align="right">編集</TableCell>
+                <TableCell align="right">削除</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {subCategories.map((subCategory) => (
+                <TableRow key={subCategory.subCategoryId}>
+                  <TableCell component="th" scope="row">
+                    {subCategory.subCategoryName}
+                  </TableCell>
+                  <TableCell align="right">
+                    <Button onClick={() => handleEditClick(subCategory)} color="primary">編集</Button>
+                  </TableCell>
+                  <TableCell>
+                    <Button onClick={() => handleDeleteClick(subCategory.subCategoryId)} color="secondary">削除</Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        {isEditorOpen && (
+          <SubCategoryEditor
+            isOpen={isEditorOpen}
+            onClose={() => setIsEditorOpen(false)}
+            onSave={handleSave}
+            selectedCategoryId={categoryId}
+            subCategory={editingSubCategory}
+          />
+        )}
+      </Box>
+    </Modal>
   );
 };
 
