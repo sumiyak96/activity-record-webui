@@ -1,25 +1,31 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import ReactDOM from "react-dom";
+import {
+  BrowserRouter as Router,
+  Routes, // SwitchからRoutesへ変更
+  Route,
+  Link
+} from "react-router-dom";
+
+import Home from "./home/Home";
+import Menu from "./components/Menu";
+import ActivityRegister from "./activity/ActivityRegister";
+import ActivityList from "./activity/ActivityList";
+import CategoryList from "./category/CategoryList";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div>
+        <Menu />
+        <Routes>
+          <Route path="/activity/register" element={<ActivityRegister />} />
+          <Route path="/activity/list" element={<ActivityList />} />
+          <Route path="/category/list" element={<CategoryList />} />
+          <Route path="/" element={<Home />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
