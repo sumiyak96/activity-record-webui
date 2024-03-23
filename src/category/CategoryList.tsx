@@ -52,7 +52,7 @@ const CategoryList: React.FC = () => {
   };
   return (
     <div>
-      <h2>Category List</h2>
+      <h2>カテゴリ一覧</h2>
       <button onClick={() => { setIsModalOpen(true); setSelectedCategory(null); }}>Add New Category</button>
       {isModalOpen && (
         <CategoryEditor

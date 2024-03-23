@@ -46,7 +46,7 @@ const SubCategoryList: React.FC<Props> = ({ categoryId, subCategories, onClose }
 
   return (
     <div style={{ border: '2px solid black', padding: '20px', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: 'white' }}>
-      <h2>SubCategories</h2>
+      <h2>サブカテゴリ一覧</h2>
       <button onClick={handleAddClick}>Add SubCategory</button>
       {subCategories?.map((subCategory) => (
         <div key={subCategory.subCategoryId}>

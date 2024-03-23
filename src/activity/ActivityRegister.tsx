@@ -52,7 +52,7 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElemen
 
     return (
         <form onSubmit={handleSubmit}>
-            <h2>行動登録</h2>
+            <h2>イベント登録</h2>
             <div>
                 <label>
                     カテゴリ:
