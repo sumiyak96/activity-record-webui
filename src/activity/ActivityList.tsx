@@ -45,8 +45,8 @@ const ActivityList: React.FC = () => {
             {activities.map((activity, index) => (
               <TableRow key={index}>
                 <TableCell component="th" scope="row">{activity.eventDate}</TableCell>
-                <TableCell>{activity.categoryName} (ID: {activity.categoryId})</TableCell>
-                <TableCell>{activity.subCategoryName} (ID: {activity.subCategoryId})</TableCell>
+                <TableCell>{activity.categoryName}</TableCell>
+                <TableCell>{activity.subCategoryName}</TableCell>
                 <TableCell>{activity.memo}</TableCell>
               </TableRow>
             ))}
