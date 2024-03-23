@@ -30,7 +30,7 @@ const ActivityList: React.FC = () => {
 
   return (
     <div>
-      <h2>Activity List</h2>
+      <h2>イベント一覧</h2>
       <TableContainer component={Paper}>
         <Table aria-label="simple table">
           <TableHead>
