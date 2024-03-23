@@ -1,60 +1,78 @@
 import React, { useState, useEffect } from 'react';
-import { Category, RegisterCategoryRequest, UpdateCategoryRequest } from './Category'; // 適切な型をインポート
+import Modal from '@mui/material/Modal';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import { Category, RegisterCategoryRequest, UpdateCategoryRequest } from './Category';
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
   onSave: (data: RegisterCategoryRequest | UpdateCategoryRequest) => void;
-  category?: Category | null; // 初期値または編集対象のカテゴリ
+  category?: Category | null;
 }
+
+const style = {
+  position: 'absolute' as 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+};
 
 const CategoryEditor: React.FC<Props> = ({ isOpen, onClose, onSave, category: initialCategory }) => {
   const [categoryName, setCategoryName] = useState('');
 
-  // 編集対象のカテゴリ情報がある場合は、フォームの初期値を設定
   useEffect(() => {
-    if (initialCategory) {
-      setCategoryName(initialCategory.categoryName);
-    } else {
-      // 新規追加の場合は初期値をリセット
-      setCategoryName('');
-    }
+    setCategoryName(initialCategory ? initialCategory.categoryName : '');
   }, [initialCategory]);
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    // 新規追加と更新を区別して処理
-    if (initialCategory) {
-      // 更新処理
-      const updateData: UpdateCategoryRequest = {
-        categoryId : initialCategory.categoryId,
-        categoryName : categoryName
-      };
-      onSave(updateData);
-    } else {
-      // 新規追加処理
-      const newData: RegisterCategoryRequest = {
-        categoryName : categoryName
-      };
-      onSave(newData);
-    }
+    const data = initialCategory ? { categoryId: initialCategory.categoryId, categoryName } : { categoryName };
+    onSave(data);
     onClose();
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div style={{ border: '2px solid black', padding: '20px', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: 'white' }}>
-      <h2>{initialCategory ? 'Edit Category' : 'Add New Category'}</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Category Name:</label>
-          <input type="text" value={categoryName} onChange={e => setCategoryName(e.target.value)} />
-        </div>
-        <button type="submit">Save</button>
-        <button type="button" onClick={onClose}>Cancel</button>
-      </form>
-    </div>
+    <Modal
+      open={isOpen}
+      onClose={onClose}
+      aria-labelledby="category-editor-title"
+      aria-describedby="category-editor-description"
+    >
+      <Box sx={style}>
+        <Typography id="category-editor-title" variant="h6" component="h2">
+          {initialCategory ? 'カテゴリ編集' : 'カテゴリ追加'}
+        </Typography>
+        <form onSubmit={handleSubmit}>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="categoryName"
+            label="Category Name"
+            type="text"
+            fullWidth
+            variant="outlined"
+            value={categoryName}
+            onChange={(e) => setCategoryName(e.target.value)}
+          />
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+            <Button onClick={onClose} sx={{ mr: 1 }}>
+              Cancel
+            </Button>
+            <Button type="submit" variant="contained">
+              Save
+            </Button>
+          </Box>
+        </form>
+      </Box>
+    </Modal>
   );
 };
 
