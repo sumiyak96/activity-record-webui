@@ -1,7 +1,6 @@
-// src/activity/ActivityList.tsx
-
 import React, { useState, useEffect } from 'react';
 import ServerAdapter from '../api/ServerAdapter';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 
 interface Activity {
   userId: string;
@@ -32,20 +31,29 @@ const ActivityList: React.FC = () => {
   return (
     <div>
       <h2>Activity List</h2>
-      {activities.length > 0 ? (
-        <ul>
-          {activities.map((activity, index) => (
-            <li key={index}>
-              <h3>Date: {activity.eventDate}</h3>
-              <p>Category: {activity.categoryName} (ID: {activity.categoryId})</p>
-              <p>SubCategory: {activity.subCategoryName} (ID: {activity.subCategoryId})</p>
-              <p>Memo: {activity.memo}</p>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>No activities found.</p>
-      )}
+      <TableContainer component={Paper}>
+        <Table aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              <TableCell>Date</TableCell>
+              <TableCell>Category</TableCell>
+              <TableCell>SubCategory</TableCell>
+              <TableCell>Memo</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {activities.map((activity, index) => (
+              <TableRow key={index}>
+                <TableCell component="th" scope="row">{activity.eventDate}</TableCell>
+                <TableCell>{activity.categoryName} (ID: {activity.categoryId})</TableCell>
+                <TableCell>{activity.subCategoryName} (ID: {activity.subCategoryId})</TableCell>
+                <TableCell>{activity.memo}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      {activities.length === 0 && <p>No activities found.</p>}
     </div>
   );
 };
