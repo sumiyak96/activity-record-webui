@@ -3,12 +3,13 @@ import ServerAdapter from '../api/ServerAdapter';
 import { Category, RegisterSubCategoryRequest, SubCategory, UpdateSubCategoryRequest } from './Category'; // カテゴリとサブカテゴリの型定義をインポート
 import CategoryEditor from './CategoryEditor';
 import SubCategoryList from './SubCategoryList';
+import { Button, Table, TableBody, TableCell, TableHead, TableRow, Paper } from '@mui/material';
 
 const CategoryList: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubCategoryListOpen, setIsSubCategoryListOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null); // 編集するカテゴリを保持する状態
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [selectedSubCategory, setSelectedSubCategory] = useState<SubCategory[] | null>(null);
 
   useEffect(() => {
@@ -26,12 +27,12 @@ const CategoryList: React.FC = () => {
 
   const handleDelete = async (categoryId: number) => {
     console.log(`Delete category with ID: ${categoryId}`);
-    // 実際の削除処理
+    // 実際の削除処理をここに実装
   };
 
   const handleEdit = (category: Category) => {
-    setSelectedCategory(category); // 編集するカテゴリを設定
-    setIsModalOpen(true); // エディターモーダルを開く
+    setSelectedCategory(category);
+    setIsModalOpen(true);
   };
 
   const handleSave = async (category: any) => {
@@ -48,21 +49,24 @@ const CategoryList: React.FC = () => {
   const handleShowSubCategories = (category: Category) => {
     setSelectedCategory(category); // 編集するカテゴリを設定
     setSelectedSubCategory(category.subCategories); // 選択されたサブカテゴリを設定
-    setIsSubCategoryListOpen(true)
+    setIsSubCategoryListOpen(true);
   };
+
   return (
-    <div>
+    <Paper>
       <h2>カテゴリ一覧</h2>
-      <button onClick={() => { setIsModalOpen(true); setSelectedCategory(null); }}>Add New Category</button>
+      <Button variant="contained" color="primary" onClick={() => { setIsModalOpen(true); setSelectedCategory(null); }}>
+        新規カテゴリー
+      </Button>
       {isModalOpen && (
         <CategoryEditor
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           onSave={handleSave}
-          category={selectedCategory} // 編集するカテゴリの情報を渡す
+          category={selectedCategory}
         />
       )}
-      {isSubCategoryListOpen && (
+      {isSubCategoryListOpen && selectedCategory && (
         <SubCategoryList
           isOpen={isSubCategoryListOpen}
           onClose={() => setIsSubCategoryListOpen(false)}
@@ -70,21 +74,35 @@ const CategoryList: React.FC = () => {
           categoryId={selectedCategory!.categoryId}
         />
       )}
-      <table>
-        {/* テーブルのヘッダーとボディ */}
-        {categories.map((category) => (
-          <tr key={category.categoryId}>
-            <td>{category.categoryId}</td>
-            <td>{category.categoryName}</td>
-            <td>
-              <button onClick={() => handleDelete(category.categoryId)}>Delete</button>
-              <button onClick={() => handleEdit(category)}>Edit</button> {/* 詳細を編集に変更 */}
-              <button onClick={() => handleShowSubCategories(category)}>Show SubCategories</button>
-            </td>
-          </tr>
-        ))}
-      </table>
-    </div>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>ID</TableCell>
+            <TableCell>カテゴリ名</TableCell>
+            <TableCell>編集</TableCell>
+            <TableCell>削除</TableCell>
+            <TableCell>サブカテゴリ一覧</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {categories.map((category) => (
+            <TableRow key={category.categoryId}>
+              <TableCell>{category.categoryId}</TableCell>
+              <TableCell>{category.categoryName}</TableCell>
+              <TableCell>
+                <Button color="primary" onClick={() => handleEdit(category)}>編集</Button>
+              </TableCell>
+              <TableCell>
+                <Button color="secondary" onClick={() => handleDelete(category.categoryId)}>削除</Button>
+              </TableCell>
+              <TableCell>
+                <Button onClick={() => handleShowSubCategories(category)}>サブカテゴリ一覧</Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </Paper>
   );
 };
 
