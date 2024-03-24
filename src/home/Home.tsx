@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Menu from '../components/Menu';
 import ServerAdapter from '../api/ServerAdapter';
+import ActivitySummary from '../activity/ActivitySummary';
 
 interface Activity {
   id: number;
@@ -25,14 +26,7 @@ const Home: React.FC = () => {
 
   return (
     <div style={{ display: 'flex' }}>
-      <div style={{ width: '200px' }}>
-        <Menu />
-      </div>
-      <div style={{ flex: 1 }}>
-        {/* メインコンテンツ */}
-        <h1>ホームページへようこそ</h1>
-        {/* メインコンテンツの追加 */}
-      </div>
+      <ActivitySummary />
     </div>
   );
 };

@@ -1,3 +1,4 @@
+import { AggregateActivityRequest, AggregateActivityResponse } from "../activity/Activity";
 import { Category, RegisterSubCategoryRequest, UpdateSubCategoryRequest } from "../category/Category";
 
 class ServerAdapter {
@@ -138,6 +139,47 @@ class ServerAdapter {
       throw new Error('Failed to fetch categories');
     }
   }
+
+  public async aggregateActivities(request: AggregateActivityRequest): Promise<AggregateActivityResponse> {
+    try {
+      const url = new URL(`${this.baseUrl}/activity/aggregate`);
+  
+      // URLSearchParamsを使ってクエリパラメータを追加
+      const params: { [key: string]: string } = {
+        categoryId: request.categoryId.toString(),
+        aggregateUnit: request.aggregateUnit,
+      };
+  
+      // Optional parameters
+      if (request.subCategoryId !== undefined) {
+        params['subCategoryId'] = request.subCategoryId.toString();
+      }
+      if (request.fromDate !== undefined) {
+        params['fromDate'] = request.fromDate;
+      }
+      if (request.toDate !== undefined) {
+        params['toDate'] = request.toDate;
+      }
+  
+      url.search = new URLSearchParams(params).toString();
+      const response = await fetch(url.toString(), {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error('Network response was not ok.');
+      }
+  
+      const data: AggregateActivityResponse = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Failed to fetch activities:", error);
+      throw new Error('Failed to fetch activities');
+    }
+  }  
 }
 
 export default ServerAdapter.getInstance();
