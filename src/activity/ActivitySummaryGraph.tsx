@@ -6,17 +6,53 @@ interface ActivitySummaryGraphProps {
     data: AggregateActivityResponse | undefined;
 }
 
+interface GraphData {
+    term: string;
+    [key: string]: string | number;
+}
+
 const ActivitySummaryGraph: React.FC<ActivitySummaryGraphProps> = ({ data }) => {
-    // データを加工して、Rechartsで扱いやすい形式にする
-    const graphData = data?.aggregateActivities.map(activity => ({
-        term: activity.aggregateTerm,
-        activityCount: activity.activityCount,
-    }));
+    const graphData = (data: AggregateActivityResponse): GraphData[] => {
+        const result: GraphData[] = [];
+
+        data.aggregateActivities.forEach(item => {
+            const existingTerm = result.find(termItem => termItem.term === item.aggregateTerm);
+            if (existingTerm) {
+                existingTerm[item.subCategoryName || 'other'] = item.activityCount;
+            } else {
+                const newTerm = {
+                    term: item.aggregateTerm,
+                    [item.subCategoryName || 'other']: item.activityCount
+                } as GraphData
+                result.push(newTerm);
+            }
+        });
+
+        return result;
+    };
+    const processedGraphData = data ? graphData(data) : []
+
+    const subCategoryNames: string[] = processedGraphData
+        .reduce((acc: string[], item) => {
+            Object.keys(item).forEach(key => {
+                if (key !== 'term' && !acc.includes(key)) {
+                    acc.push(key);
+                }
+            });
+            return acc;
+        }, [])
+        .sort();
+
+    const getColor = (index: number): string => {
+        // 色の配列または色を生成するロジック
+        const colors = ['#8884d8', '#82ca9d', '#ffc658', '#d0ed57', '#a4de6c', '#8dd1e1'];
+        return colors[index % colors.length];
+    };
 
     return (
         <ResponsiveContainer width="100%" height={300}>
             <BarChart
-                data={graphData}
+                data={processedGraphData}
                 margin={{
                     top: 20,
                     right: 30,
@@ -26,10 +62,12 @@ const ActivitySummaryGraph: React.FC<ActivitySummaryGraphProps> = ({ data }) => 
             >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="term" />
-                <YAxis />
+                <YAxis allowDecimals={false} />
                 <Tooltip />
                 <Legend />
-                <Bar dataKey="activityCount" name="活動回数" fill="#8884d8" />
+                {subCategoryNames.map((name, index) => (
+                    <Bar dataKey={name} stackId="a" fill={getColor(index)} key={name} />
+                ))}
             </BarChart>
         </ResponsiveContainer>
     );
